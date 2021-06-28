@@ -1,13 +1,31 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<mule xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core"
-	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
-http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd">
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
 	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="34683c30-9042-426e-9b4a-29613cba9ea3" >
 		<http:listener-connection host="0.0.0.0" port="8081" />
 	</http:listener-config>
+	<http:request-config name="HTTP_Request_configuration" doc:name="HTTP Request configuration" doc:id="afcf44f5-ead8-4205-92fc-a89afe756bc5">
+		<http:request-connection protocol="HTTPS" host="ap-test.unit4.com">
+			<http:authentication >
+				<http:basic-authentication username="test" password="test01" />
+			</http:authentication>
+		</http:request-connection>
+	</http:request-config>
 	<flow name="integration_01Flow" doc:id="559b4163-e236-47d2-9f75-e8e2220430ba" >
-		<http:listener doc:name="Listener" doc:id="17c5dec8-ffd7-476f-90a4-2e1c9ea77ab5" config-ref="HTTP_Listener_config" path="/test"/>
+		<http:listener doc:name="GET " doc:id="17c5dec8-ffd7-476f-90a4-2e1c9ea77ab5" config-ref="HTTP_Listener_config" path="/test"/>
+		<http:request method="GET" doc:name="Request" doc:id="f2283e53-c0d4-4a03-9261-fe0f46b8fffd" config-ref="HTTP_Request_configuration" path="/outbox">
+		</http:request>
+		<ee:transform doc:name="Transform Message" doc:id="80c35fb9-9c12-40cb-95a1-d313e30c2c41" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/xml
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
 	</flow>
 </mule>
